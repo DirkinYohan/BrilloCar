@@ -24,7 +24,7 @@ public class ServicioController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener detalle de un servicio", description = "Busca un servicio por su ID")
-    public ResponseEntity<Servicio> obtenerServicio(@PathVariable Long id) {
+    public ResponseEntity<Servicio> obtenerServicio(@PathVariable("id") Long id) {
         return servicioService.obtenerServicio(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

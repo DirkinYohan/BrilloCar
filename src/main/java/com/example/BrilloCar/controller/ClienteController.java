@@ -24,7 +24,7 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener detalle de un cliente", description = "Busca un cliente por su ID")
-    public ResponseEntity<Cliente> obtenerCliente(@PathVariable Long id) {
+    public ResponseEntity<Cliente> obtenerCliente(@PathVariable("id") Long id) {
         return clienteService.obtenerCliente(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -23,7 +23,7 @@ public class PagoController {
 
     @GetMapping("/orden/{ordenId}")
     @Operation(summary = "Consultar pago por orden", description = "Busca la información del pago de una orden dada")
-    public ResponseEntity<Pago> obtenerPagoPorOrden(@PathVariable Long ordenId) {
+    public ResponseEntity<Pago> obtenerPagoPorOrden(@PathVariable("ordenId") Long ordenId) {
         return pagoService.obtenerPagoPorOrden(ordenId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -24,7 +24,7 @@ public class VehiculoController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener detalle de un vehículo", description = "Busca un vehículo por su ID")
-    public ResponseEntity<Vehiculo> obtenerVehiculo(@PathVariable Long id) {
+    public ResponseEntity<Vehiculo> obtenerVehiculo(@PathVariable("id") Long id) {
         return vehiculoService.obtenerVehiculo(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -32,7 +32,7 @@ public class VehiculoController {
 
     @GetMapping("/cliente/{clienteId}")
     @Operation(summary = "Listar vehículos por cliente", description = "Retorna todos los vehículos de un cliente específico")
-    public ResponseEntity<List<Vehiculo>> listarVehiculosPorCliente(@PathVariable Long clienteId) {
+    public ResponseEntity<List<Vehiculo>> listarVehiculosPorCliente(@PathVariable("clienteId") Long clienteId) {
         return ResponseEntity.ok(vehiculoService.listarVehiculosPorCliente(clienteId));
     }
 }

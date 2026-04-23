@@ -25,23 +25,23 @@ public class OrdenController {
     @PostMapping("/{ordenId}/servicios/{servicioId}")
     @Operation(summary = "Agregar servicio a la orden", description = "Añade un servicio específico a una orden existente")
     public ResponseEntity<OrdenServicio> agregarServicioAOrden(
-            @PathVariable Long ordenId,
-            @PathVariable Long servicioId,
-            @RequestParam(required = false) String observaciones) {
+            @PathVariable("ordenId") Long ordenId,
+            @PathVariable("servicioId") Long servicioId,
+            @RequestParam(name = "observaciones", required = false) String observaciones) {
         return ResponseEntity.ok(ordenService.agregarServicioAOrden(ordenId, servicioId, observaciones));
     }
 
     @PatchMapping("/{ordenId}/estado")
     @Operation(summary = "Cambiar estado de la orden", description = "Actualiza el estado (REGISTRADA, EN_PROCESO, FINALIZADA, etc.)")
     public ResponseEntity<OrdenServicio> cambiarEstadoOrden(
-            @PathVariable Long ordenId,
-            @RequestParam EstadoOrden nuevoEstado) {
+            @PathVariable("ordenId") Long ordenId,
+            @RequestParam("nuevoEstado") EstadoOrden nuevoEstado) {
         return ResponseEntity.ok(ordenService.cambiarEstadoOrden(ordenId, nuevoEstado));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener detalle completo de la orden", description = "Retorna la orden con todos sus servicios y pago")
-    public ResponseEntity<OrdenServicio> obtenerOrden(@PathVariable Long id) {
+    public ResponseEntity<OrdenServicio> obtenerOrden(@PathVariable("id") Long id) {
         return ordenService.obtenerOrden(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
