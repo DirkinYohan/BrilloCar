@@ -20,6 +20,8 @@ public class OrdenServiceImpl implements OrdenService {
     @Override
     @Transactional
     public OrdenServicio crearOrden(OrdenServicio orden) {
+        orden.setNumeroOrden("ORD-" + System.currentTimeMillis());
+        orden.setFechaRecepcion(java.time.LocalDateTime.now());
         orden.setEstado(EstadoOrden.REGISTRADA);
         orden.setTotal(BigDecimal.ZERO);
         return ordenRepository.save(orden);

@@ -1,0 +1,361 @@
+{
+  "info": {
+    "name": "BrilloCar API",
+    "_postman_id": "brillocar-collection-v1",
+    "description": "Colección completa de la API BrilloCar.\n\nFlujo correcto de uso:\n1. Crear Cliente\n2. Registrar Vehículo (asociado al cliente)\n3. Crear Servicio (fijo o variable)\n4. Crear Orden (asociada a cliente + vehículo)\n5. Agregar Servicios a la Orden\n6. Cambiar estado de Orden a FINALIZADA\n7. Registrar Pago",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "clienteId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "vehiculoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "servicioId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ordenId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Clientes",
+      "item": [
+        {
+          "name": "Crear Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos\",\n  \"apellido\": \"Ramírez\",\n  \"email\": \"carlos.ramirez@email.com\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Calle 123 # 45-67, Bogotá\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener Cliente por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/{{clienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes", "{{clienteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todos los Clientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "clientes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Vehículos",
+      "item": [
+        {
+          "name": "Registrar Vehículo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehiculos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehiculos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"ABC-123\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Corolla\",\n  \"anio\": 2020,\n  \"tipo\": \"SEDAN\",\n  \"propietario\": {\n    \"id\": {{clienteId}}\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener Vehículo por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/vehiculos/{{vehiculoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehiculos", "{{vehiculoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar Vehículos por Cliente",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/vehiculos/cliente/{{clienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehiculos", "cliente", "{{clienteId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Servicios",
+      "item": [
+        {
+          "name": "Crear Servicio Fijo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/servicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "servicios"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"ServicioFijo\",\n  \"nombre\": \"Lavado Básico\",\n  \"descripcion\": \"Lavado exterior con champu y secado\",\n  \"precioBase\": 25000,\n  \"tipo\": \"LAVADO_BASICO\",\n  \"precio\": 25000\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear Servicio Precio Variable",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/servicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "servicios"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"ServicioPrecioVariable\",\n  \"nombre\": \"Lavado Premium\",\n  \"descripcion\": \"Lavado completo interior y exterior con encerado\",\n  \"precioBase\": 50000,\n  \"tipo\": \"LAVADO_PREMIUM\",\n  \"tarifas\": {\n    \"MOTO\": 30000,\n    \"SEDAN\": 50000,\n    \"CAMIONETA\": 70000,\n    \"SUV\": 75000,\n    \"PESADO\": 100000\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener Servicio por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/servicios/{{servicioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "servicios", "{{servicioId}}"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todos los Servicios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/servicios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "servicios"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Órdenes",
+      "item": [
+        {
+          "name": "Crear Orden de Servicio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numeroOrden\": \"ORD-001\",\n  \"observaciones\": \"Cliente solicita lavado urgente\",\n  \"cliente\": {\n    \"id\": {{clienteId}}\n  },\n  \"vehiculo\": {\n    \"id\": {{vehiculoId}}\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Agregar Servicio a Orden",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes/{{ordenId}}/servicios/{{servicioId}}?observaciones=Sin novedad",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes", "{{ordenId}}", "servicios", "{{servicioId}}"],
+              "query": [
+                {
+                  "key": "observaciones",
+                  "value": "Sin novedad"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Estado → EN_PROCESO",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes/{{ordenId}}/estado?nuevoEstado=EN_PROCESO",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes", "{{ordenId}}", "estado"],
+              "query": [
+                {
+                  "key": "nuevoEstado",
+                  "value": "EN_PROCESO"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Estado → FINALIZADA",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes/{{ordenId}}/estado?nuevoEstado=FINALIZADA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes", "{{ordenId}}", "estado"],
+              "query": [
+                {
+                  "key": "nuevoEstado",
+                  "value": "FINALIZADA"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Estado → ENTREGADA",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes/{{ordenId}}/estado?nuevoEstado=ENTREGADA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes", "{{ordenId}}", "estado"],
+              "query": [
+                {
+                  "key": "nuevoEstado",
+                  "value": "ENTREGADA"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Estado → CANCELADA",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes/{{ordenId}}/estado?nuevoEstado=CANCELADA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes", "{{ordenId}}", "estado"],
+              "query": [
+                {
+                  "key": "nuevoEstado",
+                  "value": "CANCELADA"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Orden por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/ordenes/{{ordenId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ordenes", "{{ordenId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Pagos",
+      "item": [
+        {
+          "name": "Registrar Pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monto\": 50000,\n  \"metodo\": \"EFECTIVO\",\n  \"estado\": \"COMPLETADO\",\n  \"fechaPago\": \"2026-04-23T18:00:00\",\n  \"orden\": {\n    \"id\": {{ordenId}}\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener Pago por Orden",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/orden/{{ordenId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "orden", "{{ordenId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
