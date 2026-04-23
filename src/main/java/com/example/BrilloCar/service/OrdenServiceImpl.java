@@ -3,12 +3,15 @@ package com.example.BrilloCar.service;
 import com.example.BrilloCar.model.entity.*;
 import com.example.BrilloCar.model.enums.EstadoOrden;
 import com.example.BrilloCar.model.enums.TipoVehiculo;
+import com.example.BrilloCar.repository.ClienteRepository;
 import com.example.BrilloCar.repository.OrdenServicioRepository;
 import com.example.BrilloCar.repository.ServicioRepository;
+import com.example.BrilloCar.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -16,14 +19,33 @@ import java.util.Optional;
 public class OrdenServiceImpl implements OrdenService {
     private final OrdenServicioRepository ordenRepository;
     private final ServicioRepository servicioRepository;
+    private final VehiculoRepository vehiculoRepository;
+    private final ClienteRepository clienteRepository;
 
     @Override
     @Transactional
     public OrdenServicio crearOrden(OrdenServicio orden) {
+        if (orden.getVehiculo() == null || orden.getVehiculo().getId() == null) {
+            throw new IllegalArgumentException("La orden debe estar asociada a un vehículo existente");
+        }
+
+        Vehiculo vehiculo = vehiculoRepository.findById(orden.getVehiculo().getId())
+                .orElseThrow(() -> new RuntimeException("Vehículo no encontrado"));
+
+        if (orden.getCliente() == null || orden.getCliente().getId() == null) {
+            throw new IllegalArgumentException("La orden debe estar asociada a un cliente existente");
+        }
+
+        Cliente cliente = clienteRepository.findById(orden.getCliente().getId())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        orden.setVehiculo(vehiculo);
+        orden.setCliente(cliente);
         orden.setNumeroOrden("ORD-" + System.currentTimeMillis());
-        orden.setFechaRecepcion(java.time.LocalDateTime.now());
         orden.setEstado(EstadoOrden.REGISTRADA);
         orden.setTotal(BigDecimal.ZERO);
+        orden.setFechaRecepcion(LocalDateTime.now());
+
         return ordenRepository.save(orden);
     }
 
@@ -64,6 +86,16 @@ public class OrdenServiceImpl implements OrdenService {
     public OrdenServicio cambiarEstadoOrden(Long ordenId, EstadoOrden nuevoEstado) {
         OrdenServicio orden = ordenRepository.findById(ordenId)
                 .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+
+        if ((nuevoEstado == EstadoOrden.FINALIZADA || nuevoEstado == EstadoOrden.ENTREGADA)
+                && orden.getItems().isEmpty()) {
+            throw new IllegalStateException("No se puede finalizar una orden sin servicios registrados");
+        }
+
+        if (nuevoEstado == EstadoOrden.FINALIZADA && orden.getFechaFinalizacion() == null) {
+            orden.setFechaFinalizacion(LocalDateTime.now());
+        }
+
         orden.setEstado(nuevoEstado);
         return ordenRepository.save(orden);
     }

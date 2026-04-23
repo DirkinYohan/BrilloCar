@@ -22,6 +22,10 @@ public class PagoServiceImpl implements PagoService {
     @Override
     @Transactional
     public Pago registrarPago(Pago pago) {
+        if (pago.getOrden() == null || pago.getOrden().getId() == null) {
+            throw new IllegalArgumentException("El pago debe estar asociado a una orden");
+        }
+
         OrdenServicio orden = ordenRepository.findById(pago.getOrden().getId())
                 .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
 
@@ -33,9 +37,15 @@ public class PagoServiceImpl implements PagoService {
             throw new IllegalStateException("La orden ya tiene un pago registrado");
         }
 
+        if (pago.getMonto().compareTo(orden.getTotal()) != 0) {
+            throw new IllegalArgumentException("El monto del pago (" + pago.getMonto() +
+                    ") no coincide con el total de la orden (" + orden.getTotal() + ")");
+        }
+
         pago.setOrden(orden);
         pago.setFechaPago(LocalDateTime.now());
         pago.setEstado(EstadoPago.COMPLETADO);
+
         return pagoRepository.save(pago);
     }
 
